@@ -1,4 +1,4 @@
-package ldap
+package user
 
 import (
 	"log"

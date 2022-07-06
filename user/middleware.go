@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-func RequiredMiddleware(store *session.Store) fiber.Handler {
+func Authorized(store *session.Store) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		sess, err := store.Get(c)
 		if err != nil {

@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 
-	"theses/ldap"
+	"theses/db"
 	"theses/page"
 )
 
@@ -28,12 +28,14 @@ func LoginPost(store *session.Store) fiber.Handler {
 			return Login()(c)
 		}
 
-		user, err := ldap.FindUser(form.Email, form.Password)
+		user, err := FindUser(form.Email, form.Password)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			page.AddError(c, "Username or password is invalid")
 			return Login()(c)
 		}
+
+		db.Con().Save(&user)
 
 		// Get session from storage
 		sess, err := store.Get(c)
@@ -41,7 +43,7 @@ func LoginPost(store *session.Store) fiber.Handler {
 			return c.SendStatus(fiber.StatusInternalServerError)
 		}
 
-		gob.Register(ldap.User{})
+		gob.Register(User{})
 		sess.Set("uid", user.Id)
 		sess.Set("user", user)
 

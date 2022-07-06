@@ -10,6 +10,8 @@ import (
 	"github.com/gofiber/template/html"
 	"github.com/joho/godotenv"
 
+	"theses/db"
+	"theses/topic"
 	"theses/user"
 )
 
@@ -40,11 +42,12 @@ func main() {
 		ContextKey: "csrf",
 	}))
 
-	app.Get("/", user.RequiredMiddleware(store), func(c *fiber.Ctx) error {
-		return c.Render("index", fiber.Map{
-			"Title": "Hello, World!",
-		}, "layouts/main")
-	})
+	// Migrate the schema
+	if err = db.Con().AutoMigrate(&topic.Topic{}, &user.User{}); err != nil {
+		log.Fatal("failed to migrate database " + err.Error())
+	}
+
+	app.Get("/", user.Authorized(store), topic.ListTopics())
 
 	app.Get("/login", user.Login())
 	app.Post("/login", user.LoginPost(store))

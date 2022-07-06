@@ -7,8 +7,6 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-
-	"theses/topic"
 )
 
 var db *gorm.DB
@@ -19,17 +17,12 @@ func connect() (err error) {
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_HOST"),
-		os.Getenv("DB_POST"),
+		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"),
 	)
 
 	if db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{}); err != nil {
 		return errors.New("failed to connect database " + err.Error())
-	}
-
-	// Migrate the schema
-	if err = db.AutoMigrate(&topic.Topic{}); err != nil {
-		return errors.New("failed to migrate database " + err.Error())
 	}
 
 	return nil

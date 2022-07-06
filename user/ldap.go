@@ -1,30 +1,21 @@
-package ldap
+package user
 
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/go-ldap/ldap/v3"
 )
 
-type User struct {
-	Id        string
-	Email     string
-	FirstName string
-	LastName  string
-	FullName  string
-}
-
 var (
-	ldapURL  = os.Getenv("LDAP_URL")
-	baseDN   = os.Getenv("LDAP_BASE")
-	searchDN = "uid=%s,ou=users," + baseDN
+	searchDN = "uid=%s,ou=users"
 	filter   = "(objectClass=*)"
 )
 
 func bindAndSearch(l *ldap.Conn, username, password string) (*ldap.Entry, error) {
-	userDN := fmt.Sprintf(searchDN, ldap.EscapeFilter(username))
+	userDN := fmt.Sprintf(searchDN+","+os.Getenv("LDAP_BASE"), ldap.EscapeFilter(username))
 	err := l.Bind(userDN, password)
 	if err != nil {
 		return nil, fmt.Errorf("bind error: %s", err)
@@ -58,7 +49,7 @@ func FindUser(username, password string) (*User, error) {
 		username = strings.Split(username, "@")[0]
 	}
 
-	l, err := ldap.DialURL(ldapURL)
+	l, err := ldap.DialURL(os.Getenv("LDAP_URL"))
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +61,9 @@ func FindUser(username, password string) (*User, error) {
 	}
 
 	user := User{}
-	user.Id = result.GetAttributeValue("uidNumber")
+	if id, err := strconv.Atoi(result.GetAttributeValue("uidNumber")); err == nil {
+		user.Id = uint(id)
+	}
 	user.Email = result.GetAttributeValue("mail")
 	user.FirstName = result.GetAttributeValue("givenName")
 	user.LastName = result.GetAttributeValue("sn")
