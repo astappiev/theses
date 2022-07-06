@@ -1,0 +1,17 @@
+<form class="m-auto" style="max-width: 330px;" method="post">
+    <input type="hidden" name="csrf" value="{{.csrf}}"/>
+
+    <h1 class="h3 mb-3 fw-normal">{{.Title}}</h1>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email address</label>
+        <input type="email" name="email" class="form-control" id="email" placeholder="username@l3s.de" required>
+        <div id="emailHelp" class="form-text">Use your L3S LDAP account.</div>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
+    </div>
+
+    <button class="w-100 btn btn-primary" type="submit">Sign in</button>
+</form>
