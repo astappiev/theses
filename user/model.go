@@ -3,6 +3,7 @@ package user
 type User struct {
 	Id        uint `gorm:"primaryKey"`
 	Email     string
+	Title     string
 	FirstName string
 	LastName  string
 	FullName  string

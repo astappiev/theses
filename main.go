@@ -52,6 +52,9 @@ func main() {
 	app.Get("/login", user.Login())
 	app.Post("/login", user.LoginPost(store))
 
+	app.Get("/topic", topic.CreateTopic())
+	app.Post("/topic", topic.CreateTopicPost())
+
 	app.Get("/logout", user.Logout(store))
 
 	log.Fatal(app.Listen(":3000"))
